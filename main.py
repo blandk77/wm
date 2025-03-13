@@ -1,5 +1,4 @@
 from pyrogram import Client, filters
-from pyrogram.errors import UserDeactivatedBan, UserDeactivatedRestrict, UserDeactivatedScam
 from database import MongoDB
 from watermark import add_watermark
 from config import API_ID, API_HASH, BOT_TOKEN
