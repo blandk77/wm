@@ -30,7 +30,7 @@ def handle_file(update, context):
     context.bot.send_video(chat_id=update.effective_chat.id, video=open('output.mp4', 'rb'))
 
 def main():
-    updater = Updater(TOKEN, use_context=True)
+    updater = Updater(TOKEN)
 
     dp = updater.dispatcher
 
