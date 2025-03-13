@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD python main.py
+CMD gunicorn app:app & python main.py
