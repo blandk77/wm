@@ -3,4 +3,4 @@ pymongo
 ffmpeg-python
 Pillow
 pyrogram
-Tg-crypto
+
