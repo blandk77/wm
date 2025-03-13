@@ -1,7 +1,7 @@
 import os
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler
-from telegram.ext.filters import Filters
+from telegram.ext.filters import TEXT, VIDEO  
 from database import MongoDB
 from watermark import add_watermark
 from config import TOKEN, MONGO_URI
@@ -35,9 +35,9 @@ def main():
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler('start', start))
-    dp.add_handler(CommandHandler('add', ask_watermark_url))
-    dp.add_handler(MessageHandler(Filters.text, handle_watermark_url))
-    dp.add_handler(MessageHandler(Filters.video, handle_file))
+    dp.add_handler(CommandHandler('ask_watermark_url', ask_watermark_url))
+    dp.add_handler(MessageHandler(TEXT, handle_watermark_url))
+    dp.add_handler(MessageHandler(VIDEO, handle_file))
 
     updater.start_polling()
     updater.idle()
