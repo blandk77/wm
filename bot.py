@@ -1,6 +1,7 @@
 import os
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler
+from telegram.ext.filters import Filters
 from database import MongoDB
 from watermark import add_watermark
 from config import TOKEN, MONGO_URI
