@@ -1,21 +1,22 @@
+import cv2
+import numpy as np
 import ffmpeg
 import requests
-from PIL import Image
-from io import BytesIO
 
 def add_watermark(input_file, watermark_url):
     # Download the watermark image
     response = requests.get(watermark_url)
-    img = Image.open(BytesIO(response.content))
+    nparr = np.frombuffer(response.content, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
     # Save the image to a temporary file
-    img.save('watermark.png')
+    cv2.imwrite('watermark.png', img)
 
     # Add the watermark to the video
     (
         ffmpeg
         .input(input_file)
-        .overlay(ffmpeg.input('watermark.png').filter('scale', 100, 100), x=10, y=10)
+        .overlay(ffmpeg.input('watermark.png'), x=10, y=10)
         .output('output.mp4')
         .run()
     )
