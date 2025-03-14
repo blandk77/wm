@@ -15,7 +15,7 @@ def add_watermark(input_file, watermark_url):
     (
         ffmpeg
         .input(input_file)
-        .overlay('watermark.png', x=10, y=10)
+        .overlay(ffmpeg.input('watermark.png').filter('scale', 100, 100), x=10, y=10)
         .output('output.mp4')
         .run()
     )
