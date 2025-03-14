@@ -2,8 +2,8 @@ import pymongo
 from config import MONGO_URL
 
 class MongoDB:
-    def __init__(self):
-        self.client = pymongo.MongoClient("mongodb://localhost:27017/")
+    def __init__(self, mongo_url):
+        self.client = pymongo.MongoClient(mongo_url)
         self.db = self.client["watermark_bot"]
         self.collection = self.db["watermark_urls"]
 
