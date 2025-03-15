@@ -7,3 +7,4 @@ TgCrypto
 pyrogram
 pymongo
 moviepy
+ffmpeg-python
