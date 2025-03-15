@@ -1,6 +1,6 @@
 import os
 import ffmpeg
-from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip
+from moviepy import VideoFileClip, ImageClip, CompositeVideoClip
 
 def add_overlay(client, message, overlay_image):
     video_file = message.download()
