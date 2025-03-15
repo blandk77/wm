@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 
 app = Client("telegram_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-mongo_db_instance = MongoDB(MONGO_URI, MONGO_DB_NAME, MONGO_COLLECTION_NAME)
+mongo_db = MongoDB(MONGO_URI, MONGO_DB_NAME, MONGO_COLLECTION_NAME)
 
 @app.on_message(filters.command("start"))
 def start_cmd(client, message):
