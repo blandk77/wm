@@ -5,6 +5,6 @@ MONGO_URL = "mongodb+srv://telegramguy21:tnkIwvbNkJ5U3fZ7@botsuse.bpgag.mongodb.
 MONGO_DB_NAME = "telegram_bot"
 MONGO_COLLECTION_NAME = "overlay_images"
 
-Other settings
+#Other settings
 DOWNLOAD_DIR = "/tmp/downloads"
 UPLOAD_DIR = "/tmp/uploads"
