@@ -4,7 +4,7 @@ from moviepy import VideoFileClip, ImageClip, CompositeVideoClip
 
 def add_overlay(client, message, overlay_image_id, user_id):
     # Get the overlay image from MongoDB
-    overlay_image = mongo_db_instance.get_overlay_image(user_id)
+    overlay_image = mongo_db.get_overlay_image(user_id)
     
     if overlay_image:
         # Download the overlay image
