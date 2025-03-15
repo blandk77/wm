@@ -1,17 +1,22 @@
 import pymongo
-from config import MONGO_URL
 
 class MongoDB:
-    def __init__(self, mongo_url):
-        self.client = pymongo.MongoClient(mongo_url)
-        self.db = self.client["watermark_bot"]
-        self.collection = self.db["watermark_urls"]
+    def __init__(self, mongo_uri, db_name, collection_name):
+        self.mongo_uri = mongo_uri
+        self.db_name = db_name
+        self.collection_name = collection_name
+        self.client = pymongo.MongoClient(self.mongo_uri)
+        self.db = self.client[self.db_name]
+        self.collection = self.db[self.collection_name]
 
-    def save_watermark_url(self, url, user_id):
-        self.collection.update_one({"user_id": user_id}, {"$set": {"url": url}}, upsert=True)
+    def add_overlay_image(self, overlay_image):
+        self.collection.insert_one({"overlay_image": overlay_image})
 
-    def get_watermark_url(self, user_id):
-        return self.collection.find_one({"user_id": user_id})["url"]
+    def remove_overlay_image(self, overlay_image):
+        self.collection.delete_one({"overlay_image": overlay_image})
 
-    def remove_watermark_url(self, user_id):
-        self.collection.delete_one({"user_id": user_id})
+    def get_overlay_image(self):
+        overlay_image = self.collection.find_one({"overlay_image": {"$exists": True}})
+        if overlay_image:
+            return overlay_image["overlay_image"]
+        return None
