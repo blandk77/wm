@@ -8,3 +8,5 @@ pyrogram
 pymongo
 moviepy
 ffmpeg-python
+opencv-python
+numpy
