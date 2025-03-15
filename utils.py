@@ -7,7 +7,7 @@ def add_overlay(video_path, overlay_image_path, output_path):
 
     Args:
         video_path (str): Path to the input video.
-        overlay_image_path (str): Path to the overlay image (provided by the user).
+        overlay_image_path (str): Path to the overlay image.
         output_path (str): Path to save the processed video.
 
     Returns:
