@@ -16,9 +16,9 @@ A Telegram bot that allows users to add a transparent image overlay (with text) 
 1. Clone the repository:
 
 ```
-  git clone https://github.com/yourusername/telegram-video-overlay-bot.git
+  git clone https://github.com/blandk77/wm.git
 
-cd telegram-video-overlay-bot
+cd Telegram-Guy
 
 ```
 
@@ -59,10 +59,5 @@ bash
 
 bash
   docker run -d video-overlay-bot
-
-```
-
-▌License
-MIT
 
 ```
