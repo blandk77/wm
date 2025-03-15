@@ -4,13 +4,13 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from database import MongoDB
 from utils import add_overlay
-from config import API_HASH, API_ID, BOT_TOKEN, MONGO_COLLECTION_NAME, MONGO_DB_NAME, MONGO_URL
+from config import API_HASH, API_ID, BOT_TOKEN, MONGO_COLLECTION_NAME, MONGO_DB_NAME, MONGO_URI
 
 logging.basicConfig(level=logging.INFO)
 
 app = Client("telegram_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-mongo_db = (MONGO_URL, MONGO_DB_NAME, MONGO_COLLECTION_NAME)
+mongo_db = (MONGO_URI, MONGO_DB_NAME, MONGO_COLLECTION_NAME)
 
 @app.on_message(filters.command("start"))
 def start_cmd(client, message):
