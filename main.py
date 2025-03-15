@@ -20,23 +20,26 @@ def start_cmd(client, message):
 def add_overlay_cmd(client, message):
     if message.reply_to_message and message.reply_to_message.photo:
         overlay_image = message.reply_to_message.photo.file_id
-        mongo_db_instance.add_overlay_image(overlay_image)
+        user_id = message.from_user.id
+        mongo_db_instance.add_overlay_image(user_id, overlay_image)
         message.reply("Overlay image added successfully!")
     else:
         message.reply("Please reply to a photo message to add it as an overlay.")
 
 @app.on_message(filters.command("remove"))
 def remove_overlay_cmd(client, message):
-    mongo_db_instance.remove_overlay_image()
+    user_id = message.from_user.id
+    mongo_db_instance.collection.delete_one({"user_id": user_id})
     message.reply("Overlay image removed successfully!")
 
 @app.on_message(filters.video | filters.document)
 def process_video(client, message):
-    overlay_image = mongo_db_instance.get_overlay_image()
-    if overlay_image:
+    user_id = message.from_user.id
+    overlay_image_id = mongo_db_instance.get_overlay_image(user_id)
+    if overlay_image_id:
         message.reply("Please wait...")
         try:
-            output_video = add_overlay(client, message, overlay_image)
+            output_video = add_overlay(client, message, overlay_image_id, user_id)
             client.send_video(message.chat.id, output_video)
         except Exception as e:
             message.reply(f"Error: {str(e)}")
