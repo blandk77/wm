@@ -1,5 +1,6 @@
 import os
 from pyrogram import Client
+from pyrogram.types import Message
 
 def add_overlay(client: Client, message: Message, overlay_image_id, user_id):
     # Download the overlay image
