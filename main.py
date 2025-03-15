@@ -1,57 +1,50 @@
-from pyrogram import Client, filters
+import os
 import logging
+from pyrogram import Client, filters
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from database import MongoDB
-from watermark import add_watermark
-from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URL
+from utils import add_overlay, remove_overlay
 
 logging.basicConfig(level=logging.INFO)
 
-app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+app = Client("telegram_bot", api_id=config.API_ID, api_hash=config.API_HASH, bot_token=config.BOT_TOKEN)
+
+mongo_db = MongoDB(config.MONGO_URI, config.MONGO_DB_NAME, config.MONGO_COLLECTION_NAME)
 
 @app.on_message(filters.command("start"))
-def start_command(client, message):
-    try:
-        message.reply("Welcome to the Watermark Bot! \nUnder development\n@Itsme123i")
-    except Exception as e:
-        logging.error(e)
+def start_cmd(client, message):
+    message.reply("Hello! I'm a Telegram bot that adds image overlays to videos.")
 
 @app.on_message(filters.command("add"))
-def add_command(client, message):
-    try:
-        message.reply("Please send me the watermark URL.")
-    except Exception as e:
-        logging.error(e)
-
-@app.on_message(filters.regex(r"^https?://"))
-def handle_watermark_url(client, message):
-    try:
-        url = message.text
-        mongo_db = MongoDB(MONGO_URL)
-        mongo_db.save_watermark_url(url, message.from_user.id)
-        message.reply("Watermark URL saved!")
-    except Exception as e:
-        logging.error(e)
-
-@app.on_message(filters.video | filters.document)
-def handle_file(client, message):
-    try:
-        file_id = message.video.file_id if message.video else message.document.file_id
-        file = client.download_media(file_id)
-        mongo_db = MongoDB(MONGO_URL)
-        watermark_url = mongo_db.get_watermark_url(message.from_user.id)
-        add_watermark(file, watermark_url)
-        client.send_video(message.from_user.id, "output.mp4")
-    except Exception as e:
-        logging.error(e)
+def add_overlay_cmd(client, message):
+    if message.reply_to_message and message.reply_to_message.media:
+        overlay_image = message.reply_to_message.media
+        mongo_db.add_overlay_image(overlay_image)
+        message.reply("Overlay image added successfully!")
+    else:
+        message.reply("Please reply to a media message (image) to add it as an overlay.")
 
 @app.on_message(filters.command("remove"))
-def remove_command(client, message):
+def remove_overlay_cmd(client, message):
+    if message.reply_to_message and message.reply_to_message.media:
+        overlay_image = message.reply_to_message.media
+        mongo_db.remove_overlay_image(overlay_image)
+        message.reply("Overlay image removed successfully!")
+    else:
+        message.reply("Please reply to a media message (image) to remove it as an overlay.")
+
+@app.on_message(filters.video | filters.document)
+def process_video(client, message):
+    message.reply("Please wait...")
     try:
-        mongo_db = MongoDB(MONGO_URL)
-        mongo_db.remove_watermark_url(message.from_user.id)
-        message.reply("Watermark URL removed!")
+        overlay_image = mongo_db.get_overlay_image()
+        if overlay_image:
+            output_video = add_overlay(message.media, overlay_image)
+            client.send_video(message.chat.id, output_video)
+        else:
+            message.reply("No overlay image found.")
     except Exception as e:
-        logging.error(e)
+        message.reply(f"Error: {str(e)}")
 
 if __name__ == "__main__":
     app.run()
