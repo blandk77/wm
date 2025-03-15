@@ -1,5 +1,5 @@
 import os
-from moviepy.editor import VideoFileClip, CompositeVideoClip, ImageClip
+from moviepy import VideoFileClip, CompositeVideoClip, ImageClip
 
 def add_overlay(video_file, overlay_image):
     video = VideoFileClip(video_file)
