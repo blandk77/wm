@@ -12,8 +12,8 @@ class MongoDB:
     def add_overlay_image(self, overlay_image):
         self.collection.insert_one({"overlay_image": overlay_image})
 
-    def remove_overlay_image(self, overlay_image):
-        self.collection.delete_one({"overlay_image": overlay_image})
+    def remove_overlay_image(self):
+        self.collection.delete_many({})
 
     def get_overlay_image(self):
         overlay_image = self.collection.find_one({"overlay_image": {"$exists": True}})
