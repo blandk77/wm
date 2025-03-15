@@ -4,13 +4,13 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from database import MongoDB
 from utils import add_overlay
-from config import API_HASH, API_ID, BOT_TOKEN, MONGO_COLLECTION_NAME, MONGO_DB_NAME, MONGO_URI
+from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URI, MONGO_DB_NAME, MONGO_COLLECTION_NAME
 
 logging.basicConfig(level=logging.INFO)
 
 app = Client("telegram_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-mongo_db = MongoDB(MONGO_URI, MONGO_DB_NAME, MONGO_COLLECTION_NAME)
+mongo_db_instance = MongoDB(MONGO_URI, MONGO_DB_NAME, MONGO_COLLECTION_NAME)
 
 @app.on_message(filters.command("start"))
 def start_cmd(client, message):
@@ -20,23 +20,23 @@ def start_cmd(client, message):
 def add_overlay_cmd(client, message):
     if message.reply_to_message and message.reply_to_message.photo:
         overlay_image = message.reply_to_message.photo.file_id
-        mongo_db.add_overlay_image(overlay_image)
+        mongo_db_instance.add_overlay_image(overlay_image)
         message.reply("Overlay image added successfully!")
     else:
         message.reply("Please reply to a photo message to add it as an overlay.")
 
 @app.on_message(filters.command("remove"))
 def remove_overlay_cmd(client, message):
-    mongo_db.remove_overlay_image()
+    mongo_db_instance.remove_overlay_image()
     message.reply("Overlay image removed successfully!")
 
 @app.on_message(filters.video | filters.document)
 def process_video(client, message):
-    overlay_image = mongo_db.get_overlay_image()
+    overlay_image = mongo_db_instance.get_overlay_image()
     if overlay_image:
         message.reply("Please wait...")
         try:
-            output_video = add_overlay(message, overlay_image)
+            output_video = add_overlay(client, message, overlay_image)
             client.send_video(message.chat.id, output_video)
         except Exception as e:
             message.reply(f"Error: {str(e)}")
