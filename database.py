@@ -1,5 +1,5 @@
 import pymongo
-from config import MONGO_COLLECTION_NAME, MONGO_DB_NAME, MONGO_URL
+from config import MONGO_COLLECTION_NAME, MONGO_DB_NAME, MONGO_URI
 class MongoDB:
     def __init__(self, mongo_uri, db_name, collection_name):
         self.mongo_uri = mongo_uri
