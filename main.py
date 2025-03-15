@@ -34,6 +34,16 @@ def remove_overlay_cmd(client, message):
     collection.delete_one({"user_id": user_id})
     message.reply("Overlay image removed successfully!")
 
+@app.on_message(filters.command("view"))
+def view_overlay_cmd(client, message):
+    user_id = message.from_user.id
+    user_data = collection.find_one({"user_id": user_id})
+    if user_data and "overlay_image" in user_data:
+        overlay_image_id = user_data["overlay_image"]
+        client.send_photo(message.chat.id, overlay_image_id)
+    else:
+        message.reply("No overlay image found.")
+
 @app.on_message(filters.video | filters.document)
 def process_video(client, message):
     user_id = message.from_user.id
