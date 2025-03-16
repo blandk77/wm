@@ -1,14 +1,7 @@
 import os
-import cv2
-import numpy as np
 import subprocess
 from pyrogram import Client
 from pyrogram.types import Message
-
-def fix_video_metadata(input_path, output_path):
-    subprocess.run([
-        "ffmpeg", "-i", input_path, "-vcodec", "copy", "-acodec", "copy", "-crf", "0", output_path
-    ])
 
 def add_overlay(client: Client, message: Message, overlay_image_id, user_id):
     # Download the overlay image
@@ -17,38 +10,33 @@ def add_overlay(client: Client, message: Message, overlay_image_id, user_id):
     # Download the video
     video = client.download_media(message)
 
-    # Read the video and overlay image
-    cap = cv2.VideoCapture(video)
-    overlay_img = cv2.imread(overlay_image)
+    # Define output file paths
+    temp_output_path = os.path.join("/app", f"{user_id}_temp.mp4")
+    final_output_path = os.path.join("/app", f"{user_id}_final.mp4")
 
-    # Get the video dimensions and frame rate
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fps = cap.get(cv2.CAP_PROP_FPS)
+    # Use FFmpeg to overlay the image on the video
+    ffmpeg_command = [
+        "ffmpeg",
+        "-i", video,            # Input video
+        "-i", overlay_image,    # Input overlay image
+        "-filter_complex", "overlay=W:H",  # Overlay the image (adjust position with W:H if needed)
+        "-c:v", "copy",         # Copy the original video codec
+        "-c:a", "copy",         # Copy the original audio codec
+        "-map", "0",            # Map all streams (video, audio, subtitles)
+        "-map", "1",            # Map the overlay image
+        temp_output_path
+    ]
+    subprocess.run(ffmpeg_command)
 
-    # Resize the overlay image to match the video dimensions
-    overlay_img = cv2.resize(overlay_img, (width, height))
-
-    # Create a video writer to save the output video
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Use the original codec
-    temp_output_path = os.path.join("/app", f"{user_id}.mp4")
-    out = cv2.VideoWriter(temp_output_path, fourcc, fps, (width, height))
-
-    # Add the overlay to the video
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-        overlayed_frame = cv2.addWeighted(frame, 0.8, overlay_img, 0.2, 0)  # Adjust blending weights
-        out.write(overlayed_frame)
-
-    # Release the video capture and writer
-    cap.release()
-    out.release()
-
-    # Fix metadata using ffmpeg
-    final_output_path = os.path.join("/app", f"{user_id}_fixed.mp4")
-    fix_video_metadata(temp_output_path, final_output_path)
+    # Fix metadata (just to ensure compatibility with Telegram)
+    ffmpeg_metadata_command = [
+        "ffmpeg",
+        "-i", temp_output_path,
+        "-c", "copy",           # Copy all streams without re-encoding
+        "-movflags", "+faststart",
+        final_output_path
+    ]
+    subprocess.run(ffmpeg_metadata_command)
 
     # Send the output video
     client.send_video(message.chat.id, video=final_output_path)
